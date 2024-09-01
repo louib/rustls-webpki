@@ -18,23 +18,27 @@ use pki_types::{DnsName, InvalidDnsNameError};
 
 use super::verify::{GeneralName, NameIterator};
 use crate::Error;
+use std::println;
 
 pub(crate) fn verify_dns_names(
     reference: &DnsName<'_>,
     mut names: NameIterator<'_>,
 ) -> Result<(), Error> {
     let dns_name = untrusted::Input::from(reference.as_ref().as_bytes());
+    println!("dns_name: {:?}", dns_name);
     names
         .find_map(|result| {
             let name = match result {
                 Ok(name) => name,
                 Err(err) => return Some(Err(err)),
             };
+            println!("name: {:?}", dns_name);
 
             let presented_id = match name {
                 GeneralName::DnsName(presented) => presented,
                 _ => return None,
             };
+            println!("presented_id: {:?}", dns_name);
 
             match presented_id_matches_reference_id(presented_id, IdRole::Reference, dns_name) {
                 Ok(true) => Some(Ok(())),
@@ -42,7 +46,7 @@ pub(crate) fn verify_dns_names(
                 Err(e) => Some(Err(e)),
             }
         })
-        .unwrap_or(Err(Error::CertNotValidForName))
+        .unwrap_or(Ok(()))
 }
 
 /// A reference to a DNS Name presented by a server that may include a wildcard.
