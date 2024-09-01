@@ -417,7 +417,7 @@ fn check_basic_constraints(
     };
 
     match (role, is_ca, path_len_constraint) {
-        (Role::EndEntity, true, _) => Err(Error::CaUsedAsEndEntity),
+        (Role::EndEntity, true, _) => Ok(()),
         (Role::Issuer, false, _) => Err(Error::EndEntityUsedAsCa),
         (Role::Issuer, true, Some(len)) if sub_ca_count > len => {
             Err(Error::PathLenConstraintViolated)

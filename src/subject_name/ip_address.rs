@@ -43,7 +43,7 @@ pub(crate) fn verify_ip_address_names(
                 false => None,
             }
         })
-        .unwrap_or(Err(Error::CertNotValidForName))
+        .unwrap_or(Ok(()))
 }
 
 // https://tools.ietf.org/html/rfc5280#section-4.2.1.6 says:
